@@ -57,6 +57,14 @@ async function run() {
     // ---->All API Start<-----
 
     // All users API Start
+
+    app.get("/countUsers", async (req, res) => {
+      const query = {};
+      const users = await usersCollection.find(query).toArray();
+      const totalUsers = { count: users.length };
+      res.send(totalUsers);
+    });
+
     app.get("/users", verifyJWT, verifyAdmin, async (req, res) => {
       const query = {};
       const users = await usersCollection.find(query).toArray();
@@ -85,6 +93,24 @@ async function run() {
     });
 
     // All users API End
+
+    // All admin API start
+
+    app.get("/checkAdmin/:email", verifyJWT, async (req, res) => {
+      const requester = req.params.email;
+      let data = { admin: false };
+      const requesterAccount = await usersCollection.findOne({
+        email: requester,
+      });
+      if (requesterAccount.role === "admin") {
+        data = { admin: true };
+      } else {
+        data = { admin: false };
+      }
+      res.send(data);
+    });
+
+    // All admin API end
 
     // ---->All API End<-----
   } finally {
