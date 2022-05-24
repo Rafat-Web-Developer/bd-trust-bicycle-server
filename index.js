@@ -20,12 +20,12 @@ const client = new MongoClient(uri, {
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
-  console.log(authHeader);
+  
   if (!authHeader) {
     return res.status(401).send({ message: "UnAuthorized access" });
   }
   const token = authHeader.split(" ")[1];
-  console.log(token);
+
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
     if (err) {
       return res.status(403).send({ message: "Forbidden access" });
@@ -60,7 +60,7 @@ async function run() {
 
     // All users API Start
 
-    app.get("/countUsers", async (req, res) => {
+    app.get("/countUsers", verifyJWT, verifyAdmin, async (req, res) => {
       const query = {};
       const users = await usersCollection.find(query).toArray();
       const totalUsers = { count: users.length };
@@ -94,13 +94,22 @@ async function run() {
       res.send({ result, token });
     });
 
+    app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     // All users API End
 
     // All admin API start
 
     app.get("/checkAdmin/:email", verifyJWT, async (req, res) => {
       const requester = req.params.email;
-      console.log(requester);
       let data = { admin: false };
       const requesterAccount = await usersCollection.findOne({
         email: requester,
@@ -110,7 +119,6 @@ async function run() {
       } else {
         data = { admin: false };
       }
-      console.log(data);
       res.send(data);
     });
 
