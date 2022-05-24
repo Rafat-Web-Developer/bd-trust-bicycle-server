@@ -20,7 +20,7 @@ const client = new MongoClient(uri, {
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
-  
+
   if (!authHeader) {
     return res.status(401).send({ message: "UnAuthorized access" });
   }
@@ -68,7 +68,7 @@ async function run() {
     });
 
     app.get("/users", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
+      const query = { role: "user" };
       const users = await usersCollection.find(query).toArray();
       res.send(users);
     });
@@ -120,6 +120,22 @@ async function run() {
         data = { admin: false };
       }
       res.send(data);
+    });
+
+    app.get("/admins", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = { role: "admin" };
+      const admins = await usersCollection.find(query).toArray();
+      res.send(admins);
+    });
+
+    app.put("/admin/user/:email", verifyJWT, verifyAdmin, async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "user" },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
     });
 
     // All admin API end
