@@ -20,10 +20,12 @@ const client = new MongoClient(uri, {
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
+  console.log(authHeader);
   if (!authHeader) {
     return res.status(401).send({ message: "UnAuthorized access" });
   }
   const token = authHeader.split(" ")[1];
+  console.log(token);
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
     if (err) {
       return res.status(403).send({ message: "Forbidden access" });
@@ -98,6 +100,7 @@ async function run() {
 
     app.get("/checkAdmin/:email", verifyJWT, async (req, res) => {
       const requester = req.params.email;
+      console.log(requester);
       let data = { admin: false };
       const requesterAccount = await usersCollection.findOne({
         email: requester,
@@ -107,6 +110,7 @@ async function run() {
       } else {
         data = { admin: false };
       }
+      console.log(data);
       res.send(data);
     });
 
