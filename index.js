@@ -20,6 +20,24 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
+
+    // All Collections
+    const usersCollection = client
+      .db("bd-trust-bicycle-db")
+      .collection("users");
+
+    // ---->All API Start<-----
+
+    // All users API Start
+    app.get("/users", async (req, res) => {
+      const query = {};
+      const users = await usersCollection.find(query).toArray();
+      res.send(users);
+    });
+
+    // All users API End
+
+    // ---->All API End<-----
   } finally {
   }
 }
