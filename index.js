@@ -174,6 +174,12 @@ async function run() {
 
     // All products API start
 
+    app.get("/products", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const products = await productsCollection.find(query).toArray();
+      res.send(products);
+    });
+
     app.post("/product", verifyJWT, verifyAdmin, async (req, res) => {
       const product = req.body;
       const result = await productsCollection.insertOne(product);
