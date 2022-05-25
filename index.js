@@ -174,9 +174,16 @@ async function run() {
 
     // All products API start
 
-    app.get("/products", verifyJWT, verifyAdmin, async (req, res) => {
+    app.get("/products", verifyJWT, async (req, res) => {
       const query = {};
       const products = await productsCollection.find(query).toArray();
+      res.send(products);
+    });
+
+    app.get("/product/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const products = await productsCollection.findOne(query);
       res.send(products);
     });
 
