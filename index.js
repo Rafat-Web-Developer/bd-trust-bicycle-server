@@ -43,6 +43,9 @@ async function run() {
     const usersCollection = client
       .db("bd-trust-bicycle-db")
       .collection("users");
+    const productsCollection = client
+      .db("bd-trust-bicycle-db")
+      .collection("products");
 
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -168,6 +171,16 @@ async function run() {
     });
 
     // All admin API end
+
+    // All products API start
+
+    app.post("/product", verifyJWT, verifyAdmin, async (req, res) => {
+      const product = req.body;
+      const result = await productsCollection.insertOne(product);
+      res.send(result);
+    });
+
+    // All products API end
 
     // ---->All API End<-----
   } finally {
