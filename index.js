@@ -60,10 +60,12 @@ async function run() {
 
     // All users API Start
 
-    app.get("/countUsers", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const users = await usersCollection.find(query).toArray();
-      const totalUsers = { count: users.length };
+    app.get("/total", verifyJWT, verifyAdmin, async (req, res) => {
+      const queryUsers = { role: "user" };
+      const queryAdmins = { role: "admin" };
+      const users = await usersCollection.find(queryUsers).toArray();
+      const admins = await usersCollection.find(queryAdmins).toArray();
+      const totalUsers = { userCount: users.length, adminCount: admins.length };
       res.send(totalUsers);
     });
 
