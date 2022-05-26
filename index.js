@@ -304,10 +304,15 @@ async function run() {
       const id = req.params.id;
       const updateData = req.body;
       const filter = { product_id: updateData.product_id };
+      const options = { upsert: true };
       const updateDoc = {
         $set: updateData,
       };
-      const result = await reviewsCollection.updateOne(filter, updateDoc);
+      const result = await reviewsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
       res.send(result);
     });
 
