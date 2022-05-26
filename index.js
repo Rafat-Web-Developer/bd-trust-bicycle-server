@@ -49,6 +49,9 @@ async function run() {
     const ordersCollection = client
       .db("bd-trust-bicycle-db")
       .collection("orders");
+    const reviewsCollection = client
+      .db("bd-trust-bicycle-db")
+      .collection("reviews");
 
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -294,6 +297,21 @@ async function run() {
     });
 
     // All Orders API End
+
+    // All Review API Start
+
+    app.put("/addReview/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: updateData,
+      };
+      const result = await reviewsCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // All Review API End
 
     // ---->All API End<-----
   } finally {
