@@ -66,13 +66,28 @@ async function run() {
 
     // All users API Start
 
-    app.get("/total", verifyJWT, verifyAdmin, async (req, res) => {
-      const queryUsers = { role: "user" };
-      const queryAdmins = { role: "admin" };
-      const users = await usersCollection.find(queryUsers).toArray();
-      const admins = await usersCollection.find(queryAdmins).toArray();
-      const totalUsers = { userCount: users.length, adminCount: admins.length };
-      res.send(totalUsers);
+    app.get("/total/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const checkAdmin = await usersCollection.find(query).toArray();
+      if (checkAdmin[0]?.role === "admin") {
+        const queryUsers = { role: "user" };
+        const queryAdmins = { role: "admin" };
+        const users = await usersCollection.find(queryUsers).toArray();
+        const admins = await usersCollection.find(queryAdmins).toArray();
+        const totalUsers = {
+          userCount: users.length,
+          adminCount: admins.length,
+        };
+        res.send(totalUsers);
+      } else {
+        const query = { user_email: email };
+        const orders = await ordersCollection.find(query).toArray();
+        const totalOrders = {
+          ordersCount: orders.length,
+        };
+        res.send(totalOrders);
+      }
     });
 
     app.get("/users", verifyJWT, verifyAdmin, async (req, res) => {
