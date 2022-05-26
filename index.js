@@ -300,7 +300,7 @@ async function run() {
 
     // All Review API Start
 
-    app.get("/reviews", verifyJWT, async (req, res) => {
+    app.get("/reviews", async (req, res) => {
       const query = {};
       const reviews = await reviewsCollection.find(query).toArray();
       res.send(reviews);
