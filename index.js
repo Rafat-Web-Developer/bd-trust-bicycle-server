@@ -207,7 +207,14 @@ async function run() {
 
     // All Orders API Start
 
-    app.post("/order", async (req, res) => {
+    app.get("/myOrders/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const query = { user_email: email };
+      const orders = await ordersCollection.find(query).toArray();
+      res.send(orders);
+    });
+
+    app.post("/order", verifyJWT, async (req, res) => {
       const order = req.body;
       const query = {
         user_email: order.user_email,
