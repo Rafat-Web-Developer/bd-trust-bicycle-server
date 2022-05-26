@@ -192,7 +192,7 @@ async function run() {
 
     // All products API start
 
-    app.get("/products", verifyJWT, async (req, res) => {
+    app.get("/products", async (req, res) => {
       const query = {};
       const products = await productsCollection.find(query).toArray();
       res.send(products);
@@ -221,6 +221,12 @@ async function run() {
     // All products API end
 
     // All Orders API Start
+
+    app.get("/orders", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const orders = await ordersCollection.find(query).toArray();
+      res.send(orders);
+    });
 
     app.get("/myOrders/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
@@ -254,7 +260,19 @@ async function run() {
       res.send({ success: true, result });
     });
 
-    app.put("/order/:id", verifyJWT, verifyAdmin, async (req, res) => {
+    app.put("/order/shipped/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          shipment_status: true,
+        },
+      };
+      const result = await ordersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    app.put("/order/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const updateData = req.body;
       const filter = { _id: ObjectId(id) };
