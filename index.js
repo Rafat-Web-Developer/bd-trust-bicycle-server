@@ -300,6 +300,12 @@ async function run() {
 
     // All Review API Start
 
+    app.get("/reviews", verifyJWT, async (req, res) => {
+      const query = {};
+      const reviews = await reviewsCollection.find(query).toArray();
+      res.send(reviews);
+    });
+
     app.put("/addReview/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const updateData = req.body;
