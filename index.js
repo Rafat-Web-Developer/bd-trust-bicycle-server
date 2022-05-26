@@ -303,7 +303,10 @@ async function run() {
     app.put("/addReview/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const updateData = req.body;
-      const filter = { product_id: updateData.product_id };
+      const filter = {
+        product_id: updateData?.product_id,
+        user_email: updateData?.user_email,
+      };
       const options = { upsert: true };
       const updateDoc = {
         $set: updateData,
