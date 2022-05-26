@@ -303,7 +303,7 @@ async function run() {
     app.put("/addReview/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const updateData = req.body;
-      const filter = { _id: ObjectId(id) };
+      const filter = { product_id: updateData.product_id };
       const updateDoc = {
         $set: updateData,
       };
