@@ -254,6 +254,20 @@ async function run() {
       res.send({ success: true, result });
     });
 
+    app.put("/order/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          payment_status: updateData.payment_status,
+          transaction_id: updateData.transaction_id,
+        },
+      };
+      const result = await ordersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     app.delete("/order/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
