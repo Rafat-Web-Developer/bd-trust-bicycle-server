@@ -46,6 +46,9 @@ async function run() {
     const productsCollection = client
       .db("bd-trust-bicycle-db")
       .collection("products");
+    const ordersCollection = client
+      .db("bd-trust-bicycle-db")
+      .collection("orders");
 
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -201,6 +204,28 @@ async function run() {
     });
 
     // All products API end
+
+    // All Orders API Start
+
+    app.post("/order", async (req, res) => {
+      const order = req.body;
+      const query = {
+        user_email: order.user_email,
+        product_name: order.product_name,
+        product_id: order.product_id,
+      };
+      const exist = await ordersCollection.findOne(query);
+      if (exist) {
+        return res.send({
+          success: false,
+          message: "You already ordered this product.",
+        });
+      }
+      const result = await ordersCollection.insertOne(order);
+      res.send({ success: true, result });
+    });
+
+    // All Orders API End
 
     // ---->All API End<-----
   } finally {
